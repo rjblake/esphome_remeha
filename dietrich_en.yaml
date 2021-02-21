@@ -1,9 +1,9 @@
 esphome:
-  name: uart_dietrich
+  name: uart_remeha
   platform: ESP8266
-  board: d1_mini
+  board: huzzah
   includes:
-    - dietrich.h
+    - remeha.h
     
 wifi:
   ssid: "ssid"
@@ -30,110 +30,110 @@ uart:
 
 text_sensor:
   - platform: template
-    id: dietrich_state_txt
+    id: remeha_state_txt
     name: "Boiler state"
   - platform: template
-    id: dietrich_substate_txt
+    id: remeha_substate_txt
     name: "Boiler sub state"
 
 sensor:
   - platform: custom
     lambda: |-
-      auto dietrich = new Dietrich(id(uart_bus));
-      App.register_component(dietrich);
-      return {dietrich->state_sensor, dietrich->sub_state_sensor, dietrich->lockout_sensor, dietrich->blocking_sensor, 
-        dietrich->flow_temp_sensor, dietrich->return_temp_sensor, dietrich->outside_temp_sensor, dietrich->calorifier_temp_sensor, 
-        dietrich->boiler_control_temp_sensor, dietrich->room_temp_sensor, dietrich->ch_setpoint_sensor, dietrich->dhw_setpoint_sensor, dietrich->room_temp_setpoint_sensor,
-        dietrich->fan_speed_setpoint_sensor, dietrich->fan_speed_sensor,
-        dietrich->ionisation_current_sensor, dietrich->internal_setpoint_sensor, dietrich->available_power_sensor, dietrich->pump_percentage_sensor,
-        dietrich->desired_max_power_sensor, dietrich->actual_power_sensor,
-        dietrich->demand_source_bit0_sensor, dietrich->demand_source_bit1_sensor, dietrich->demand_source_bit2_sensor, dietrich->demand_source_bit3_sensor,
-        dietrich->demand_source_bit4_sensor, dietrich->demand_source_bit5_sensor, dietrich->demand_source_bit6_sensor, dietrich->demand_source_bit7_sensor,
-        dietrich->hours_run_pump_sensor, dietrich->hours_run_3way_sensor, dietrich->hours_run_ch_sensor, dietrich->hours_run_dhw_sensor,
-        dietrich->power_supply_aval_hours_sensor, dietrich->pump_starts_sensor, dietrich->number_of3way_valce_cycles_sensor, dietrich->burner_start_dhw_sensor,
-        dietrich->total_burner_start_sensor, dietrich->failed_burner_start_sensor, dietrich->number_flame_loss_sensor,                 
-        dietrich->hydro_pressure_sensor, dietrich->control_temp_sensor, dietrich->dhw_flowrate_sensor 
+      auto remeha = new Remeha(id(uart_bus));
+      App.register_component(remeha);
+      return {remeha->state_sensor, remeha->sub_state_sensor, remeha->lockout_sensor, remeha->blocking_sensor, 
+        remeha->flow_temp_sensor, remeha->return_temp_sensor, remeha->outside_temp_sensor, remeha->calorifier_temp_sensor, 
+        remeha->boiler_control_temp_sensor, remeha->room_temp_sensor, remeha->ch_setpoint_sensor, remeha->dhw_setpoint_sensor, remeha->room_temp_setpoint_sensor,
+        remeha->fan_speed_setpoint_sensor, remeha->fan_speed_sensor,
+        remeha->ionisation_current_sensor, remeha->internal_setpoint_sensor, remeha->available_power_sensor, remeha->pump_percentage_sensor,
+        remeha->desired_max_power_sensor, remeha->actual_power_sensor,
+        remeha->demand_source_bit0_sensor, remeha->demand_source_bit1_sensor, remeha->demand_source_bit2_sensor, remeha->demand_source_bit3_sensor,
+        remeha->demand_source_bit4_sensor, remeha->demand_source_bit5_sensor, remeha->demand_source_bit6_sensor, remeha->demand_source_bit7_sensor,
+        remeha->hours_run_pump_sensor, remeha->hours_run_3way_sensor, remeha->hours_run_ch_sensor, remeha->hours_run_dhw_sensor,
+        remeha->power_supply_aval_hours_sensor, remeha->pump_starts_sensor, remeha->number_of3way_valce_cycles_sensor, remeha->burner_start_dhw_sensor,
+        remeha->total_burner_start_sensor, remeha->failed_burner_start_sensor, remeha->number_flame_loss_sensor,                 
+        remeha->hydro_pressure_sensor, remeha->control_temp_sensor, remeha->dhw_flowrate_sensor 
       };
 
     sensors:
-    - id: dietrich_state
+    - id: remeha_state
       on_value:
         then:
           - lambda: |-
-              if (id(dietrich_state).state==0) {id(dietrich_state_txt).publish_state("0:Standby");}
-              else if (id(dietrich_state).state==1) {id(dietrich_state_txt).publish_state("1:Boiler start");}
-              else if (id(dietrich_state).state==2) {id(dietrich_state_txt).publish_state("2:Burner start");}
-              else if (id(dietrich_state).state==3) {id(dietrich_state_txt).publish_state("3:Burning CH");}
-              else if (id(dietrich_state).state==4) {id(dietrich_state_txt).publish_state("4:Burning DHW");}
-              else if (id(dietrich_state).state==5) {id(dietrich_state_txt).publish_state("5:Burner stop");}
-              else if (id(dietrich_state).state==6) {id(dietrich_state_txt).publish_state("6:Boiler stop");}
-              else if (id(dietrich_state).state==7) {id(dietrich_state_txt).publish_state("7:-");}
-              else if (id(dietrich_state).state==8) {id(dietrich_state_txt).publish_state("8:Controlled stop");}
-              else if (id(dietrich_state).state==9) {id(dietrich_state_txt).publish_state("9:Blocking mode");}
-              else if (id(dietrich_state).state==10) {id(dietrich_state_txt).publish_state("10:Locking mode");}
-              else if (id(dietrich_state).state==11) {id(dietrich_state_txt).publish_state("11:Chimney mode L");}
-              else if (id(dietrich_state).state==12) {id(dietrich_state_txt).publish_state("12:Chimney mode h");}
-              else if (id(dietrich_state).state==13) {id(dietrich_state_txt).publish_state("13:Chimney mode H");}
-              else if (id(dietrich_state).state==14) {id(dietrich_state_txt).publish_state("14:-");}
-              else if (id(dietrich_state).state==15) {id(dietrich_state_txt).publish_state("15:Manual-heatdemand");}
-              else if (id(dietrich_state).state==16) {id(dietrich_state_txt).publish_state("16:Boiler-frost-protection");}
-              else if (id(dietrich_state).state==17) {id(dietrich_state_txt).publish_state("17:De-aeration");} //
+              if (id(remeha_state).state==0) {id(remeha_state_txt).publish_state("0:Standby");}
+              else if (id(remeha_state).state==1) {id(remeha_state_txt).publish_state("1:Boiler start");}
+              else if (id(remeha_state).state==2) {id(remeha_state_txt).publish_state("2:Burner start");}
+              else if (id(remeha_state).state==3) {id(remeha_state_txt).publish_state("3:Burning CH");}
+              else if (id(remeha_state).state==4) {id(remeha_state_txt).publish_state("4:Burning DHW");}
+              else if (id(remeha_state).state==5) {id(remeha_state_txt).publish_state("5:Burner stop");}
+              else if (id(remeha_state).state==6) {id(remeha_state_txt).publish_state("6:Boiler stop");}
+              else if (id(remeha_state).state==7) {id(remeha_state_txt).publish_state("7:-");}
+              else if (id(remeha_state).state==8) {id(remeha_state_txt).publish_state("8:Controlled stop");}
+              else if (id(remeha_state).state==9) {id(remeha_state_txt).publish_state("9:Blocking mode");}
+              else if (id(remeha_state).state==10) {id(remeha_state_txt).publish_state("10:Locking mode");}
+              else if (id(remeha_state).state==11) {id(remeha_state_txt).publish_state("11:Chimney mode L");}
+              else if (id(remeha_state).state==12) {id(remeha_state_txt).publish_state("12:Chimney mode h");}
+              else if (id(remeha_state).state==13) {id(remeha_state_txt).publish_state("13:Chimney mode H");}
+              else if (id(remeha_state).state==14) {id(remeha_state_txt).publish_state("14:-");}
+              else if (id(remeha_state).state==15) {id(remeha_state_txt).publish_state("15:Manual-heatdemand");}
+              else if (id(remeha_state).state==16) {id(remeha_state_txt).publish_state("16:Boiler-frost-protection");}
+              else if (id(remeha_state).state==17) {id(remeha_state_txt).publish_state("17:De-aeration");} //
               else 
-                {id(dietrich_state_txt).publish_state("999:Unknown");}
+                {id(remeha_state_txt).publish_state("999:Unknown");}
 
-    - id: dietrich_substate
+    - id: remeha_substate
       on_value:
         then:
           - lambda: |-
-              if (id(dietrich_substate).state==0) {id(dietrich_substate_txt).publish_state("0:Standby");}
-              else if (id(dietrich_substate).state==1) {id(dietrich_substate_txt).publish_state("1:Anti-cycling");}
-              else if (id(dietrich_substate).state==2) {id(dietrich_substate_txt).publish_state("2:Open hydraulic valve");}
-              else if (id(dietrich_substate).state==3) {id(dietrich_substate_txt).publish_state("3:Pump start");}
-              else if (id(dietrich_substate).state==4) {id(dietrich_substate_txt).publish_state("4:Wait for burner start");}
-              else if (id(dietrich_substate).state==5) {id(dietrich_substate_txt).publish_state("5:-");}
-              else if (id(dietrich_substate).state==6) {id(dietrich_substate_txt).publish_state("6:-");}
-              else if (id(dietrich_substate).state==7) {id(dietrich_substate_txt).publish_state("7:-");}
-              else if (id(dietrich_substate).state==8) {id(dietrich_substate_txt).publish_state("8:-");}
-              else if (id(dietrich_substate).state==9) {id(dietrich_substate_txt).publish_state("9:-");}
-              else if (id(dietrich_substate).state==10) {id(dietrich_substate_txt).publish_state("10:Open external gas valve");}
-              else if (id(dietrich_substate).state==11) {id(dietrich_substate_txt).publish_state("11:Fan to fluegasvalve speed");}
-              else if (id(dietrich_substate).state==12) {id(dietrich_substate_txt).publish_state("12:Open fluegasvalve");}
-              else if (id(dietrich_substate).state==13) {id(dietrich_substate_txt).publish_state("13:Pre-purge");}
-              else if (id(dietrich_substate).state==14) {id(dietrich_substate_txt).publish_state("14:Wait for release");}
-              else if (id(dietrich_substate).state==15) {id(dietrich_substate_txt).publish_state("15:Burner start");}
-              else if (id(dietrich_substate).state==16) {id(dietrich_substate_txt).publish_state("16:VPS test");}
-              else if (id(dietrich_substate).state==17) {id(dietrich_substate_txt).publish_state("17:Pre-ignition");}
-              else if (id(dietrich_substate).state==18) {id(dietrich_substate_txt).publish_state("18:Ignition");}
-              else if (id(dietrich_substate).state==19) {id(dietrich_substate_txt).publish_state("19:Flame check");}
-              else if (id(dietrich_substate).state==20) {id(dietrich_substate_txt).publish_state("20:Interpurge");}
-              else if (id(dietrich_substate).state==30) {id(dietrich_substate_txt).publish_state("30:Normal internal setpoint");}
-              else if (id(dietrich_substate).state==31) {id(dietrich_substate_txt).publish_state("31:Limited internal setpoint");}
-              else if (id(dietrich_substate).state==32) {id(dietrich_substate_txt).publish_state("32:Normal power control");}
-              else if (id(dietrich_substate).state==33) {id(dietrich_substate_txt).publish_state("33:Gradient control level 1");}
-              else if (id(dietrich_substate).state==34) {id(dietrich_substate_txt).publish_state("34:Gradient control level 2");}
-              else if (id(dietrich_substate).state==35) {id(dietrich_substate_txt).publish_state("35:Gradient control level 3");}
-              else if (id(dietrich_substate).state==36) {id(dietrich_substate_txt).publish_state("36:Flame protection");}
-              else if (id(dietrich_substate).state==37) {id(dietrich_substate_txt).publish_state("37:Stabilisation time");}
-              else if (id(dietrich_substate).state==38) {id(dietrich_substate_txt).publish_state("38:Cold start");}
-              else if (id(dietrich_substate).state==39) {id(dietrich_substate_txt).publish_state("39:Limited power Tfg");}
-              else if (id(dietrich_substate).state==40) {id(dietrich_substate_txt).publish_state("40:Burner stop");}
-              else if (id(dietrich_substate).state==41) {id(dietrich_substate_txt).publish_state("41:Post purge");}
-              else if (id(dietrich_substate).state==42) {id(dietrich_substate_txt).publish_state("42:Fan to flue gas valve speed");}
-              else if (id(dietrich_substate).state==43) {id(dietrich_substate_txt).publish_state("43:Close flue gas valve");}
-              else if (id(dietrich_substate).state==44) {id(dietrich_substate_txt).publish_state("44:Stop fan");}
-              else if (id(dietrich_substate).state==45) {id(dietrich_substate_txt).publish_state("45:Close external gas valve");}
-              else if (id(dietrich_substate).state==46) {id(dietrich_substate_txt).publish_state("46:-");}
-              else if (id(dietrich_substate).state==47) {id(dietrich_substate_txt).publish_state("47:-");}
-              else if (id(dietrich_substate).state==48) {id(dietrich_substate_txt).publish_state("48:-");}
-              else if (id(dietrich_substate).state==49) {id(dietrich_substate_txt).publish_state("49:-");}
-              else if (id(dietrich_substate).state==39) {id(dietrich_substate_txt).publish_state("39:Heat exchanger protection");}
-              else if (id(dietrich_substate).state==60) {id(dietrich_substate_txt).publish_state("60:Pump post running");}
-              else if (id(dietrich_substate).state==61) {id(dietrich_substate_txt).publish_state("61:Pump stop");}
-              else if (id(dietrich_substate).state==62) {id(dietrich_substate_txt).publish_state("62:Close hydraulic valve");}
-              else if (id(dietrich_substate).state==63) {id(dietrich_substate_txt).publish_state("63:Start anti-cycle timer");}
-              else if (id(dietrich_substate).state==255) {id(dietrich_substate_txt).publish_state("255:Reset wait time");}
+              if (id(remeha_substate).state==0) {id(remeha_substate_txt).publish_state("0:Standby");}
+              else if (id(remeha_substate).state==1) {id(remeha_substate_txt).publish_state("1:Anti-cycling");}
+              else if (id(remeha_substate).state==2) {id(remeha_substate_txt).publish_state("2:Open hydraulic valve");}
+              else if (id(remeha_substate).state==3) {id(remeha_substate_txt).publish_state("3:Pump start");}
+              else if (id(remeha_substate).state==4) {id(remeha_substate_txt).publish_state("4:Wait for burner start");}
+              else if (id(remeha_substate).state==5) {id(remeha_substate_txt).publish_state("5:-");}
+              else if (id(remeha_substate).state==6) {id(remeha_substate_txt).publish_state("6:-");}
+              else if (id(remeha_substate).state==7) {id(remeha_substate_txt).publish_state("7:-");}
+              else if (id(remeha_substate).state==8) {id(remeha_substate_txt).publish_state("8:-");}
+              else if (id(remeha_substate).state==9) {id(remeha_substate_txt).publish_state("9:-");}
+              else if (id(remeha_substate).state==10) {id(remeha_substate_txt).publish_state("10:Open external gas valve");}
+              else if (id(remeha_substate).state==11) {id(remeha_substate_txt).publish_state("11:Fan to fluegasvalve speed");}
+              else if (id(remeha_substate).state==12) {id(remeha_substate_txt).publish_state("12:Open fluegasvalve");}
+              else if (id(remeha_substate).state==13) {id(remeha_substate_txt).publish_state("13:Pre-purge");}
+              else if (id(remeha_substate).state==14) {id(remeha_substate_txt).publish_state("14:Wait for release");}
+              else if (id(remeha_substate).state==15) {id(remeha_substate_txt).publish_state("15:Burner start");}
+              else if (id(remeha_substate).state==16) {id(remeha_substate_txt).publish_state("16:VPS test");}
+              else if (id(remeha_substate).state==17) {id(remeha_substate_txt).publish_state("17:Pre-ignition");}
+              else if (id(remeha_substate).state==18) {id(remeha_substate_txt).publish_state("18:Ignition");}
+              else if (id(remeha_substate).state==19) {id(remeha_substate_txt).publish_state("19:Flame check");}
+              else if (id(remeha_substate).state==20) {id(remeha_substate_txt).publish_state("20:Interpurge");}
+              else if (id(remeha_substate).state==30) {id(remeha_substate_txt).publish_state("30:Normal internal setpoint");}
+              else if (id(remeha_substate).state==31) {id(remeha_substate_txt).publish_state("31:Limited internal setpoint");}
+              else if (id(remeha_substate).state==32) {id(remeha_substate_txt).publish_state("32:Normal power control");}
+              else if (id(remeha_substate).state==33) {id(remeha_substate_txt).publish_state("33:Gradient control level 1");}
+              else if (id(remeha_substate).state==34) {id(remeha_substate_txt).publish_state("34:Gradient control level 2");}
+              else if (id(remeha_substate).state==35) {id(remeha_substate_txt).publish_state("35:Gradient control level 3");}
+              else if (id(remeha_substate).state==36) {id(remeha_substate_txt).publish_state("36:Flame protection");}
+              else if (id(remeha_substate).state==37) {id(remeha_substate_txt).publish_state("37:Stabilisation time");}
+              else if (id(remeha_substate).state==38) {id(remeha_substate_txt).publish_state("38:Cold start");}
+              else if (id(remeha_substate).state==39) {id(remeha_substate_txt).publish_state("39:Limited power Tfg");}
+              else if (id(remeha_substate).state==40) {id(remeha_substate_txt).publish_state("40:Burner stop");}
+              else if (id(remeha_substate).state==41) {id(remeha_substate_txt).publish_state("41:Post purge");}
+              else if (id(remeha_substate).state==42) {id(remeha_substate_txt).publish_state("42:Fan to flue gas valve speed");}
+              else if (id(remeha_substate).state==43) {id(remeha_substate_txt).publish_state("43:Close flue gas valve");}
+              else if (id(remeha_substate).state==44) {id(remeha_substate_txt).publish_state("44:Stop fan");}
+              else if (id(remeha_substate).state==45) {id(remeha_substate_txt).publish_state("45:Close external gas valve");}
+              else if (id(remeha_substate).state==46) {id(remeha_substate_txt).publish_state("46:-");}
+              else if (id(remeha_substate).state==47) {id(remeha_substate_txt).publish_state("47:-");}
+              else if (id(remeha_substate).state==48) {id(remeha_substate_txt).publish_state("48:-");}
+              else if (id(remeha_substate).state==49) {id(remeha_substate_txt).publish_state("49:-");}
+              else if (id(remeha_substate).state==39) {id(remeha_substate_txt).publish_state("39:Heat exchanger protection");}
+              else if (id(remeha_substate).state==60) {id(remeha_substate_txt).publish_state("60:Pump post running");}
+              else if (id(remeha_substate).state==61) {id(remeha_substate_txt).publish_state("61:Pump stop");}
+              else if (id(remeha_substate).state==62) {id(remeha_substate_txt).publish_state("62:Close hydraulic valve");}
+              else if (id(remeha_substate).state==63) {id(remeha_substate_txt).publish_state("63:Start anti-cycle timer");}
+              else if (id(remeha_substate).state==255) {id(remeha_substate_txt).publish_state("255:Reset wait time");}
               else 
-                {id(dietrich_substate_txt).publish_state("999:Unkown Sub-State");}
+                {id(remeha_substate_txt).publish_state("999:Unkown Sub-State");}
  
     - name: "Boiler lockout"
     - name: "Boiler blocking"
