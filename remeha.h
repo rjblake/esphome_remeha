@@ -1,6 +1,6 @@
 #include "esphome.h"
 
-class Dietrich : public PollingComponent, public UARTDevice {
+class Remeha : public PollingComponent, public UARTDevice {
  public:
  
   //sample data sensors
