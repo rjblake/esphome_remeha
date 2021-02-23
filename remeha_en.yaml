@@ -50,7 +50,7 @@ sensor:
         remeha->demand_source_bit0_sensor, remeha->demand_source_bit1_sensor, remeha->demand_source_bit2_sensor, remeha->demand_source_bit3_sensor,
         remeha->demand_source_bit4_sensor, remeha->demand_source_bit5_sensor, remeha->demand_source_bit6_sensor, remeha->demand_source_bit7_sensor,
         remeha->hours_run_pump_sensor, remeha->hours_run_3way_sensor, remeha->hours_run_ch_sensor, remeha->hours_run_dhw_sensor,
-        remeha->power_supply_aval_hours_sensor, remeha->pump_starts_sensor, remeha->number_of3way_valce_cycles_sensor, remeha->burner_start_dhw_sensor,
+        remeha->power_supply_avail_hours_sensor, remeha->pump_starts_sensor, remeha->number_of3way_valce_cycles_sensor, remeha->burner_start_dhw_sensor,
         remeha->total_burner_start_sensor, remeha->failed_burner_start_sensor, remeha->number_flame_loss_sensor,                 
         remeha->hydro_pressure_sensor, remeha->control_temp_sensor, remeha->dhw_flowrate_sensor 
       };
@@ -215,7 +215,7 @@ sensor:
     - name: "Boiler hours_run_dhw_sensor"
       unit_of_measurement: h
       accuracy_decimals: 0  
-    - name: "Boiler power_supply_aval_hours_sensor"
+    - name: "Boiler power_supply_avail_hours_sensor"
       unit_of_measurement: h
       accuracy_decimals: 0  
     - name: "Boiler pump_starts_sensor"
