@@ -73,7 +73,7 @@ class Remeha : public PollingComponent, public UARTDevice {
 	Sensor *hours_run_ch_sensor = new Sensor();
 	Sensor *hours_run_dhw_sensor = new Sensor();
 
-	Sensor *power_supply_aval_hours_sensor = new Sensor();
+	Sensor *power_supply_avail_hours_sensor = new Sensor();
 	Sensor *pump_starts_sensor = new Sensor();
 	Sensor *number_of3way_valce_cycles_sensor = new Sensor();
 	Sensor *burner_start_dhw_sensor = new Sensor();
@@ -233,7 +233,7 @@ class Remeha : public PollingComponent, public UARTDevice {
       if (hours_run_3way_sensor->get_name().length()>0) hours_run_3way_sensor->publish_state(((readdata[9]*256)+readdata[10])*2); delay(100); //delay for esphome to not disconnect api
       if (hours_run_ch_sensor->get_name().length()>0) hours_run_ch_sensor->publish_state(((readdata[11]*256)+readdata[12])*2); delay(100); //delay for esphome to not disconnect api
       if (hours_run_dhw_sensor->get_name().length()>0) hours_run_dhw_sensor->publish_state(((readdata[13]*256)+readdata[14])); delay(100); //delay for esphome to not disconnect api
-      if (power_supply_aval_hours_sensor->get_name().length()>0) power_supply_aval_hours_sensor->publish_state(((readdata[15]*256)+readdata[16])*2); delay(100); //delay for esphome to not disconnect api
+      if (power_supply_avail_hours_sensor->get_name().length()>0) power_supply_avail_hours_sensor->publish_state(((readdata[15]*256)+readdata[16])*2); delay(100); //delay for esphome to not disconnect api
       if (pump_starts_sensor->get_name().length()>0) pump_starts_sensor->publish_state(((readdata[17]*256)+readdata[18])*8); delay(100); //delay for esphome to not disconnect api
       if (number_of3way_valce_cycles_sensor->get_name().length()>0) number_of3way_valce_cycles_sensor->publish_state(((readdata[19]*256)+readdata[20])*8); delay(100); //delay for esphome to not disconnect api
       if (burner_start_dhw_sensor->get_name().length()>0) burner_start_dhw_sensor->publish_state(((readdata[21]*256)+readdata[22])*8); delay(100); //delay for esphome to not disconnect api
