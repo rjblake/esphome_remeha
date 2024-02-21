@@ -1,6 +1,6 @@
 #include "esphome.h"
 
-class Dietrich : public PollingComponent, public UARTDevice {
+class Remeha : public PollingComponent, public UARTDevice {
  public:
  
   //sample data sensors
@@ -84,7 +84,7 @@ class Dietrich : public PollingComponent, public UARTDevice {
 	Sensor *number_flame_loss_sensor = new Sensor();
 
   
-  Dietrich(UARTComponent *parent) : PollingComponent(15000), UARTDevice(parent) {}
+  Remeha(UARTComponent *parent) : PollingComponent(15000), UARTDevice(parent) {}
   
   bool sem_reading_data = false;
   bool sem_read_all = true;
