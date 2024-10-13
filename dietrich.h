@@ -37,12 +37,12 @@ class Remeha : public PollingComponent, public UARTDevice {
   Sensor *demand_source_bit7_sensor = new Sensor(); //BIT7=DHW Heat Demand  
     
   Sensor *input_bit0_sensor = new Sensor(); //BIT0=Shudown Input, 
-	Sensor *input_bit1_sensor = new Sensor(); //BIT1=Release Input, 
-	Sensor *input_bit2_sensor = new Sensor(); //BIT2=Ionisation, 
-	Sensor *input_bit3_sensor = new Sensor(); //BIT3=Flow Switch detecting DHW, 
-	Sensor *input_bit5_sensor = new Sensor(); //BIT5=Min Gas Pressure, 
-	Sensor *input_bit6_sensor = new Sensor(); //BIT6=CH Enable, 
-	Sensor *input_bit7_sensor = new Sensor(); //BIT7=DHW Enable
+  Sensor *input_bit1_sensor = new Sensor(); //BIT1=Release Input, 
+  Sensor *input_bit2_sensor = new Sensor(); //BIT2=Ionisation, 
+  Sensor *input_bit3_sensor = new Sensor(); //BIT3=Flow Switch detecting DHW, 
+  Sensor *input_bit5_sensor = new Sensor(); //BIT5=Min Gas Pressure, 
+  Sensor *input_bit6_sensor = new Sensor(); //BIT6=CH Enable, 
+  Sensor *input_bit7_sensor = new Sensor(); //BIT7=DHW Enable
 
   Sensor *valve_bit0_sensor = new Sensor(); //BIT0=Gas Valve, 
   Sensor *valve_bit2_sensor = new Sensor(); //BIT2=Ignition, 
