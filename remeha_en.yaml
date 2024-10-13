@@ -1,7 +1,7 @@
 esphome:
   name: remeha-calenta
   includes:
-    - /config/esphome/remeha/remeha.calenta.h
+    - /config/esphome/remeha/remeha.h
 
 esp8266:
   board: huzzah
