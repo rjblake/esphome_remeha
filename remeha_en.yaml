@@ -1,40 +1,65 @@
 esphome:
-  name: uart_remeha
-  platform: ESP8266
-  board: huzzah
+  name: remeha-calenta
   includes:
-    - remeha.h
-    
-wifi:
-  ssid: "ssid"
-  password: "secret"
+    - /config/esphome/remeha/remeha.calenta.h
+
+esp8266:
+  board: huzzah
+
+packages:
+  device_base: !include common/device_base_esp8266.yaml 
+
+substitutions:
+  node_name: remeha_calenta
+  friendly_name: Remeha Calenta
+  board: huzzah
+  restore_from_flash: 'False'
+  log_level: ERROR
 
 # Enable logging
 logger:
-  hardware_uart: UART1
-  
+  # hardware_uart: UART1
+
 # web server
 web_server:
+#  port: 80
 
 # Enable Home Assistant API
 api:
+  encryption:
+    key: "encryption key"
 
 ota:
+  platform: esphome
+  password: "password"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Remeha-Calenta Fallback Hotspot"
+    password: "password"
+
+captive_portal:
+# -------------
 
 uart:
   id: uart_bus
   baud_rate: 9600
   tx_pin: GPIO1
   rx_pin: GPIO3
+  # rx_buffer_size: 256
   # stop_bits: 1
 
 text_sensor:
   - platform: template
     id: remeha_state_txt
-    name: "Boiler state"
+    name: "Boiler State"
   - platform: template
     id: remeha_substate_txt
-    name: "Boiler sub state"
+    name: "Boiler Sub State"
 
 sensor:
   - platform: custom
@@ -50,7 +75,7 @@ sensor:
         remeha->demand_source_bit0_sensor, remeha->demand_source_bit1_sensor, remeha->demand_source_bit2_sensor, remeha->demand_source_bit3_sensor,
         remeha->demand_source_bit4_sensor, remeha->demand_source_bit5_sensor, remeha->demand_source_bit6_sensor, remeha->demand_source_bit7_sensor,
         remeha->hours_run_pump_sensor, remeha->hours_run_3way_sensor, remeha->hours_run_ch_sensor, remeha->hours_run_dhw_sensor,
-        remeha->power_supply_avail_hours_sensor, remeha->pump_starts_sensor, remeha->number_of3way_valce_cycles_sensor, remeha->burner_start_dhw_sensor,
+        remeha->power_supply_avail_hours_sensor, remeha->pump_starts_sensor, remeha->number_of_3way_valve_cycles_sensor, remeha->burner_start_dhw_sensor,
         remeha->total_burner_start_sensor, remeha->failed_burner_start_sensor, remeha->number_flame_loss_sensor,                 
         remeha->hydro_pressure_sensor, remeha->control_temp_sensor, remeha->dhw_flowrate_sensor 
       };
@@ -61,193 +86,183 @@ sensor:
         then:
           - lambda: |-
               if (id(remeha_state).state==0) {id(remeha_state_txt).publish_state("0:Standby");}
-              else if (id(remeha_state).state==1) {id(remeha_state_txt).publish_state("1:Boiler start");}
-              else if (id(remeha_state).state==2) {id(remeha_state_txt).publish_state("2:Burner start");}
+              else if (id(remeha_state).state==1) {id(remeha_state_txt).publish_state("1:Boiler Start");}
+              else if (id(remeha_state).state==2) {id(remeha_state_txt).publish_state("2:Burner Start");}
               else if (id(remeha_state).state==3) {id(remeha_state_txt).publish_state("3:Burning CH");}
               else if (id(remeha_state).state==4) {id(remeha_state_txt).publish_state("4:Burning DHW");}
-              else if (id(remeha_state).state==5) {id(remeha_state_txt).publish_state("5:Burner stop");}
-              else if (id(remeha_state).state==6) {id(remeha_state_txt).publish_state("6:Boiler stop");}
+              else if (id(remeha_state).state==5) {id(remeha_state_txt).publish_state("5:Burner Stop");}
+              else if (id(remeha_state).state==6) {id(remeha_state_txt).publish_state("6:Boiler Stop");}
               else if (id(remeha_state).state==7) {id(remeha_state_txt).publish_state("7:-");}
-              else if (id(remeha_state).state==8) {id(remeha_state_txt).publish_state("8:Controlled stop");}
-              else if (id(remeha_state).state==9) {id(remeha_state_txt).publish_state("9:Blocking mode");}
-              else if (id(remeha_state).state==10) {id(remeha_state_txt).publish_state("10:Locking mode");}
-              else if (id(remeha_state).state==11) {id(remeha_state_txt).publish_state("11:Chimney mode L");}
-              else if (id(remeha_state).state==12) {id(remeha_state_txt).publish_state("12:Chimney mode h");}
-              else if (id(remeha_state).state==13) {id(remeha_state_txt).publish_state("13:Chimney mode H");}
+              else if (id(remeha_state).state==8) {id(remeha_state_txt).publish_state("8:Controlled Stop");}
+              else if (id(remeha_state).state==9) {id(remeha_state_txt).publish_state("9:Blocking Mode");}
+              else if (id(remeha_state).state==10) {id(remeha_state_txt).publish_state("10:Locking Mode");}
+              else if (id(remeha_state).state==11) {id(remeha_state_txt).publish_state("11:Chimney Mode L");}
+              else if (id(remeha_state).state==12) {id(remeha_state_txt).publish_state("12:Chimney Mode h");}
+              else if (id(remeha_state).state==13) {id(remeha_state_txt).publish_state("13:Chimney Mode H");}
               else if (id(remeha_state).state==14) {id(remeha_state_txt).publish_state("14:-");}
-              else if (id(remeha_state).state==15) {id(remeha_state_txt).publish_state("15:Manual-heatdemand");}
-              else if (id(remeha_state).state==16) {id(remeha_state_txt).publish_state("16:Boiler-frost-protection");}
-              else if (id(remeha_state).state==17) {id(remeha_state_txt).publish_state("17:De-aeration");} //
+              else if (id(remeha_state).state==15) {id(remeha_state_txt).publish_state("15:Manual Heat Demand");}
+              else if (id(remeha_state).state==16) {id(remeha_state_txt).publish_state("16:Boiler Frost Protection");}
+              else if (id(remeha_state).state==17) {id(remeha_state_txt).publish_state("17:De-Aeration");} //
               else 
-                {id(remeha_state_txt).publish_state("999:Unknown");}
+                {id(remeha_state_txt).publish_state("999:Unknown State");}
 
     - id: remeha_substate
       on_value:
         then:
           - lambda: |-
               if (id(remeha_substate).state==0) {id(remeha_substate_txt).publish_state("0:Standby");}
-              else if (id(remeha_substate).state==1) {id(remeha_substate_txt).publish_state("1:Anti-cycling");}
-              else if (id(remeha_substate).state==2) {id(remeha_substate_txt).publish_state("2:Open hydraulic valve");}
-              else if (id(remeha_substate).state==3) {id(remeha_substate_txt).publish_state("3:Pump start");}
-              else if (id(remeha_substate).state==4) {id(remeha_substate_txt).publish_state("4:Wait for burner start");}
+              else if (id(remeha_substate).state==1) {id(remeha_substate_txt).publish_state("1:Anti-Cycling");}
+              else if (id(remeha_substate).state==2) {id(remeha_substate_txt).publish_state("2:Open Hydraulic Valve");}
+              else if (id(remeha_substate).state==3) {id(remeha_substate_txt).publish_state("3:Pump Start");}
+              else if (id(remeha_substate).state==4) {id(remeha_substate_txt).publish_state("4:Wait for Burner Start");}
               else if (id(remeha_substate).state==5) {id(remeha_substate_txt).publish_state("5:-");}
               else if (id(remeha_substate).state==6) {id(remeha_substate_txt).publish_state("6:-");}
               else if (id(remeha_substate).state==7) {id(remeha_substate_txt).publish_state("7:-");}
               else if (id(remeha_substate).state==8) {id(remeha_substate_txt).publish_state("8:-");}
               else if (id(remeha_substate).state==9) {id(remeha_substate_txt).publish_state("9:-");}
-              else if (id(remeha_substate).state==10) {id(remeha_substate_txt).publish_state("10:Open external gas valve");}
-              else if (id(remeha_substate).state==11) {id(remeha_substate_txt).publish_state("11:Fan to fluegasvalve speed");}
-              else if (id(remeha_substate).state==12) {id(remeha_substate_txt).publish_state("12:Open fluegasvalve");}
+              else if (id(remeha_substate).state==10) {id(remeha_substate_txt).publish_state("10:Open External Gas Valve");}
+              else if (id(remeha_substate).state==11) {id(remeha_substate_txt).publish_state("11:Fan to Flue Gas Valve Speed");}
+              else if (id(remeha_substate).state==12) {id(remeha_substate_txt).publish_state("12:Open Flue Gas Valve");}
               else if (id(remeha_substate).state==13) {id(remeha_substate_txt).publish_state("13:Pre-purge");}
-              else if (id(remeha_substate).state==14) {id(remeha_substate_txt).publish_state("14:Wait for release");}
-              else if (id(remeha_substate).state==15) {id(remeha_substate_txt).publish_state("15:Burner start");}
-              else if (id(remeha_substate).state==16) {id(remeha_substate_txt).publish_state("16:VPS test");}
+              else if (id(remeha_substate).state==14) {id(remeha_substate_txt).publish_state("14:Wait for Release");}
+              else if (id(remeha_substate).state==15) {id(remeha_substate_txt).publish_state("15:Burner Start");}
+              else if (id(remeha_substate).state==16) {id(remeha_substate_txt).publish_state("16:VPS Test");}
               else if (id(remeha_substate).state==17) {id(remeha_substate_txt).publish_state("17:Pre-ignition");}
               else if (id(remeha_substate).state==18) {id(remeha_substate_txt).publish_state("18:Ignition");}
-              else if (id(remeha_substate).state==19) {id(remeha_substate_txt).publish_state("19:Flame check");}
+              else if (id(remeha_substate).state==19) {id(remeha_substate_txt).publish_state("19:Flame Check");}
               else if (id(remeha_substate).state==20) {id(remeha_substate_txt).publish_state("20:Interpurge");}
-              else if (id(remeha_substate).state==30) {id(remeha_substate_txt).publish_state("30:Normal internal setpoint");}
-              else if (id(remeha_substate).state==31) {id(remeha_substate_txt).publish_state("31:Limited internal setpoint");}
-              else if (id(remeha_substate).state==32) {id(remeha_substate_txt).publish_state("32:Normal power control");}
-              else if (id(remeha_substate).state==33) {id(remeha_substate_txt).publish_state("33:Gradient control level 1");}
-              else if (id(remeha_substate).state==34) {id(remeha_substate_txt).publish_state("34:Gradient control level 2");}
-              else if (id(remeha_substate).state==35) {id(remeha_substate_txt).publish_state("35:Gradient control level 3");}
-              else if (id(remeha_substate).state==36) {id(remeha_substate_txt).publish_state("36:Flame protection");}
-              else if (id(remeha_substate).state==37) {id(remeha_substate_txt).publish_state("37:Stabilisation time");}
-              else if (id(remeha_substate).state==38) {id(remeha_substate_txt).publish_state("38:Cold start");}
-              else if (id(remeha_substate).state==39) {id(remeha_substate_txt).publish_state("39:Limited power Tfg");}
-              else if (id(remeha_substate).state==40) {id(remeha_substate_txt).publish_state("40:Burner stop");}
-              else if (id(remeha_substate).state==41) {id(remeha_substate_txt).publish_state("41:Post purge");}
-              else if (id(remeha_substate).state==42) {id(remeha_substate_txt).publish_state("42:Fan to flue gas valve speed");}
-              else if (id(remeha_substate).state==43) {id(remeha_substate_txt).publish_state("43:Close flue gas valve");}
-              else if (id(remeha_substate).state==44) {id(remeha_substate_txt).publish_state("44:Stop fan");}
-              else if (id(remeha_substate).state==45) {id(remeha_substate_txt).publish_state("45:Close external gas valve");}
+              else if (id(remeha_substate).state==30) {id(remeha_substate_txt).publish_state("30:Normal Internal Setpoint");}
+              else if (id(remeha_substate).state==31) {id(remeha_substate_txt).publish_state("31:Limited Internal Setpoint");}
+              else if (id(remeha_substate).state==32) {id(remeha_substate_txt).publish_state("32:Normal Power Control");}
+              else if (id(remeha_substate).state==33) {id(remeha_substate_txt).publish_state("33:Gradient Control Level 1");}
+              else if (id(remeha_substate).state==34) {id(remeha_substate_txt).publish_state("34:Gradient Control Level 2");}
+              else if (id(remeha_substate).state==35) {id(remeha_substate_txt).publish_state("35:Gradient Control Level 3");}
+              else if (id(remeha_substate).state==36) {id(remeha_substate_txt).publish_state("36:Flame Protection");}
+              else if (id(remeha_substate).state==37) {id(remeha_substate_txt).publish_state("37:Stabilisation Time");}
+              else if (id(remeha_substate).state==38) {id(remeha_substate_txt).publish_state("38:Cold Start");}
+              else if (id(remeha_substate).state==39) {id(remeha_substate_txt).publish_state("39:Limited Power Tfg");}
+              else if (id(remeha_substate).state==40) {id(remeha_substate_txt).publish_state("40:Burner Stop");}
+              else if (id(remeha_substate).state==41) {id(remeha_substate_txt).publish_state("41:Post Purge");}
+              else if (id(remeha_substate).state==42) {id(remeha_substate_txt).publish_state("42:Fan to Flue Gas Valve Speed");}
+              else if (id(remeha_substate).state==43) {id(remeha_substate_txt).publish_state("43:Close Flue Gas Valve");}
+              else if (id(remeha_substate).state==44) {id(remeha_substate_txt).publish_state("44:Stop Fan");}
+              else if (id(remeha_substate).state==45) {id(remeha_substate_txt).publish_state("45:Close External Gas Valve");}
               else if (id(remeha_substate).state==46) {id(remeha_substate_txt).publish_state("46:-");}
               else if (id(remeha_substate).state==47) {id(remeha_substate_txt).publish_state("47:-");}
               else if (id(remeha_substate).state==48) {id(remeha_substate_txt).publish_state("48:-");}
               else if (id(remeha_substate).state==49) {id(remeha_substate_txt).publish_state("49:-");}
-              else if (id(remeha_substate).state==39) {id(remeha_substate_txt).publish_state("39:Heat exchanger protection");}
-              else if (id(remeha_substate).state==60) {id(remeha_substate_txt).publish_state("60:Pump post running");}
-              else if (id(remeha_substate).state==61) {id(remeha_substate_txt).publish_state("61:Pump stop");}
-              else if (id(remeha_substate).state==62) {id(remeha_substate_txt).publish_state("62:Close hydraulic valve");}
-              else if (id(remeha_substate).state==63) {id(remeha_substate_txt).publish_state("63:Start anti-cycle timer");}
-              else if (id(remeha_substate).state==255) {id(remeha_substate_txt).publish_state("255:Reset wait time");}
+              else if (id(remeha_substate).state==39) {id(remeha_substate_txt).publish_state("39:Heat Exchanger Protection");}
+              else if (id(remeha_substate).state==60) {id(remeha_substate_txt).publish_state("60:Pump Post Running");}
+              else if (id(remeha_substate).state==61) {id(remeha_substate_txt).publish_state("61:Pump Stop");}
+              else if (id(remeha_substate).state==62) {id(remeha_substate_txt).publish_state("62:Close Hydraulic Valve");}
+              else if (id(remeha_substate).state==63) {id(remeha_substate_txt).publish_state("63:Start Anti-Cycle Timer");}
+              else if (id(remeha_substate).state==255) {id(remeha_substate_txt).publish_state("255:Reset Wait Time");}
               else 
                 {id(remeha_substate_txt).publish_state("999:Unkown Sub-State");}
- 
-    - name: "Boiler lockout"
-    - name: "Boiler blocking"
 
+    - name: "Boiler Lockout"
+    - name: "Boiler Blocking"
  
-    - name: "Boiler flow temp"
+    - name: "Boiler Flow Temperature"
       unit_of_measurement: °C
       accuracy_decimals: 2
-    - name: "Boiler return temp"
+    - name: "Boiler Return Temperature"
       unit_of_measurement: °C
       accuracy_decimals: 2
-    - name: "Boiler outside temp"
+    - name: "Boiler Outside Temperature"
       unit_of_measurement: °C
       accuracy_decimals: 2
-    - name: "Boiler calorifier temp"
+    - name: "Boiler Calorifier Temperature"
       unit_of_measurement: °C
       accuracy_decimals: 2
-    - name: "Boiler control temp"
+    - name: "Boiler Control Temperature"
       unit_of_measurement: °C
       accuracy_decimals: 2
-    - name: "Boiler room temp"
+    - name: "Boiler Room Temperature"
       unit_of_measurement: °C
       accuracy_decimals: 2
-    - name: "Boiler setpoint CH "
+    - name: "Boiler Setpoint (Heating)"
       unit_of_measurement: °C
       accuracy_decimals: 2
-    - name: "Boiler setpoint DHW"
+    - name: "Boiler Setpoint (Hot Water)"
       unit_of_measurement: °C
       accuracy_decimals: 2  
-    - name: "Boiler setpoint room"
+    - name: "Boiler Setpoint Room"
       unit_of_measurement: °C
       accuracy_decimals: 2  
-    - name: "Boiler setpoint fanspeed"
+    - name: "Boiler Setpoint Fanspeed"
       unit_of_measurement: rpm
-      accuracy_decimals: 2  
-    
-    - name: "Boiler fanspeed"    
+      accuracy_decimals: 2      
+    - name: "Boiler Fanspeed"    
       unit_of_measurement: rpm
-      accuracy_decimals: 2  
-    
-    - name: "Boiler ionisation_current"
+      accuracy_decimals: 2
+    - name: "Boiler Ionisation Current"
       unit_of_measurement: "μA"
       accuracy_decimals: 1  
-    - name: "Boiler internal_setpoint"
+    - name: "Boiler Internal Setpoint"
       unit_of_measurement: "%"
       accuracy_decimals: 0      
-    - name: "Boiler available_power"
+    - name: "Boiler Available Power"
       unit_of_measurement: "%"
       accuracy_decimals: 0  
-    - name: "Boiler pump_percentage"
+    - name: "Boiler Pump Percentage"
+      unit_of_measurement: "%"
+      accuracy_decimals: 0
+    - name: "Boiler Desired Max. Power"
+      unit_of_measurement: "%"
+      accuracy_decimals: 0      
+    - name: "Boiler Actual Power"
       unit_of_measurement: "%"
       accuracy_decimals: 0  
   
-    - name: "Boiler desired_max_power"
-      unit_of_measurement: "%"
-      accuracy_decimals: 0      
-    - name: "Boiler actual_power"
-      unit_of_measurement: "%"
-      accuracy_decimals: 0  
-  
-    - name: "Boiler Mod.Controller Connected"
-    - name: "Boiler Heat demand from Mod.Controller"
-    - name: "Boiler Heat demand from on/off controller"
+    - name: "Boiler Mod. Controller Connected"
+    - name: "Boiler Heat Demand from Mod. Controller"
+    - name: "Boiler Heat Demand from On/Off Controller"
     - name: "Boiler Frost Protection"        
-    - name: "Boiler DHW Eco"
+    - name: "Boiler DHW Eco Mode"
     - name: "Boiler DHW Blocking"
     - name: "Boiler Anti Legionella"
     - name: "Boiler DHW Heat Demand"
     
-    - name: "Boiler hours_run_pump_sensor"
+    - name: "Boiler Pump Hours"
       unit_of_measurement: h
       accuracy_decimals: 0      
-    - name: "Boiler hours_run_3way_sensor"
+    - name: "Boiler 3-Way Sensor Hours"
       unit_of_measurement: h
       accuracy_decimals: 0  
-    - name: "Boiler hours_run_ch_sensor"
+    - name: "Boiler Hours Run (Heating)"
       unit_of_measurement: h
       accuracy_decimals: 0  
-    - name: "Boiler hours_run_dhw_sensor"
+    - name: "Boiler Hours Run (Hot Water)"
       unit_of_measurement: h
       accuracy_decimals: 0  
-    - name: "Boiler power_supply_avail_hours_sensor"
+    - name: "Boiler Power ON Hours"
       unit_of_measurement: h
       accuracy_decimals: 0  
-    - name: "Boiler pump_starts_sensor"
-      unit_of_measurement: count
+    - name: "Boiler Pump Starts"
+      unit_of_measurement: times
       accuracy_decimals: 0    
-    - name: "Boiler number_of3way_valce_cycles_sensor"
-      unit_of_measurement: count
+    - name: "Boiler No. of 3-Way Valve Cycles"
+      unit_of_measurement: cycles
       accuracy_decimals: 0
-    - name: "Boiler burner_start_dhw_sensor"
-      unit_of_measurement: count
+    - name: "Boiler Burner Starts (Hot Water)"
+      unit_of_measurement: times
       accuracy_decimals: 0
-    - name: "Boiler total_burner_start_sensor"
-      unit_of_measurement: count
+    - name: "Boiler Burner Starts (Total)"
+      unit_of_measurement: times
       accuracy_decimals: 0
-    - name: "Boiler failed_burner_start_sensor"
-      unit_of_measurement: count
+    - name: "Boiler Failed Burner Starts"
+      unit_of_measurement: times
       accuracy_decimals: 0
-    - name: "Boiler number_flame_loss_sensor"    
-
-    - name: "Boiler hydro_pressure_sensor"
+    - name: "Boiler Flame Loss times"    
+      unit_of_measurement: times
+      accuracy_decimals: 0
+    - name: "Boiler Water Pressure"
       unit_of_measurement: bar
       accuracy_decimals: 2 
-    - name: "Boiler control_temp_sensor"
+    - name: "Control Temperature"
       unit_of_measurement: °C
       accuracy_decimals: 2 
-    - name: "Boiler dhw_flowrate_sensor"
+    - name: "Boiler Hot Water Flowrate"
       unit_of_measurement: l/m
-      accuracy_decimals: 0
-    
-  - platform: wifi_signal
-    name: "Boiler WiFi Signal"
-    update_interval: 60s
-    
-  - platform: uptime
-    name: "Boiler Uptime"  
+      accuracy_decimals: 2
