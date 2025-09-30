@@ -3,6 +3,12 @@ esphome:
   includes:
     - /config/esphome/remeha/remeha.h
 
+external_components:
+  - source:
+      type: git
+      url: https://github.com/robertklep/esphome-custom-component
+    components: [ custom, custom_component ]
+
 esp8266:
   board: huzzah
 
